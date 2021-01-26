@@ -1,0 +1,420 @@
+---
+title: "Regression with Dummy variables"
+author: "Jayani Lakshika"
+date: "August 5, 2020"
+output: 
+  html_document:
+    toc: true
+bibliography: bibliography.bib
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=FALSE}
+library(here)
+library(xtable)
+```
+
+```{r, include=FALSE}
+here::here()
+```
+
+##Dummy variable in regression
+![](pic4.png){height=10% width=10%}
+
+In **regression**, a **dummy variable** is a numerical variable that is used to represent subgroups of the sample in the study. Dummy variables are also known as **indicator variables, design variables, contrasts, one-hot coding, and binary basis variables.** A dummy variable is used to include **categorical or qualitative variable or factors** in a regression model. 
+
+If the categorical variable has N levels, then there is (N-1) dummy variables to represent the categorical variable. Remaining one is used as a reference level or baseline.
+
+##Reference level or baseline
+
+The **level** of the categorical variable to which all of the other levels are compared is known as the **reference level**.  All the interpretations are defined by comparing with the reference level or baseline.
+
+##Coding system for categorical variables in regression analysis
+
+<font size = "4"><span style = "color:blue">**Example 1:**</font></span>
+
+X is a dummy variable which represents the gender of an individual.
+
+X = 0, if male
+
+X = 1, if female
+
+<font size = "4"><span style = "color:blue">**Example 2:**</font></span>
+
+E is the categorical variable which represents the education levels of an individual. E has three levels as follows:
+
+* Undergraduate
+
+* Graduate
+
+* Postgraduate
+
+Since variable E has three levels, there are 2 dummy variables to represent E.
+
+
+
+```{r echo=FALSE, results='asis', warning=FALSE}
+library(knitr)
+b <- c('Undergraduate','Graduate','Postgraduate')
+c <- c('1',' 0','0')
+d <- c('0','1','0')
+
+df <- data.frame(b,c,d)
+names(df) <- c('E','Dummy_1' , 'Dummy_2')
+kable(df)
+```
+
+
+The order of the levels of categorical variables and the reference level can be changed when creating dummies. In this example, the reference level is “Postgraduate”.
+
+
+##Advantage of using a dummy variable
+![](pic2.png){height=10% width=10%}
+
+* Unless writing separate equation models for each subgroup, dummy variables enables us to use a single regression equation to represent multiple groups.
+ 
+* Even though coded dummy variable is a nominal-level variable, can be treated as an interval-level variable statistically.
+
+##Interaction effect
+![](pic5.png){height=10% width=10%}
+
+The **effect** of one variable depends on the value of another variable is defined as the **interaction effect.**
+
+##Effect
+
+The **difference** between the true population parameter and the null hypothesis value is called as an **effect**. Effect is also known as population effect or the difference.
+
+Eg:- The mean difference between the weight loss for male and female is the effect.
+
+The **true population parameter** is not known. Samples are taken from the population and by using a statistical test, such as a t-test or a one-way ANOVA, determines whether an effect exists. 
+
+##Regression with dummy variables in different statistical softwares{.tabset .tabset-fade .tabset-pills}
+
+In my blog, I am using <font size = "4"><span style = "color:red">R, Python, SPSS and Minitab 17</font></span> softwares.
+What are specificities in each software? Why we need to choose one out of all the softwares? I know you have these questions in your mind. Let's see...
+
+![](pic7.png){height=20% width=20%} ![](pic2.png){height=20% width=20%}
+
+**R** will create the dummy variable ***automatically.***
+
+By default, in R the **first level** of the categorical variable appears alphabetically or numerically(if the categorical variable is coded as 0,1,2,...) is defined as the baseline or reference level.
+
+![](pic8.png){height=20% width=20%} ![](pic3.png){height=20% width=20%}
+
+SPSS will **not** create the dummy variable automatically. We have to define dummies before fitting the model.
+
+SPSS is used *Recode into Different Variables* to create dummy variables.
+
+![](pic9.png){height=20% width=20%} ![](pic2.png){height=20% width=20%}
+
+Python will create the dummy variable ***automatically.***
+By default, in Python the first level of the categorical variable appears alphabetically or numerically(if the categorical variable is coded as 0,1,2,...) is defined as the baseline or reference level.
+
+![](pic6.png){height=20% width=20%} ![](pic2.png){height=20% width=20%}
+
+Minitab will create the dummy variable ***automatically.***
+By default, in Minitab the first level of the categorical variable appears alphabetically or numerically(if the categorical variable is coded as 0,1,2,...) is defined as the baseline or reference level
+
+
+
+By comparing the R,SPSS, Python, and Minitab outputs you can see that;
+
+* R output values are rounded to five decimal places
+* SPSS & Minitab output valuess are rounded to three decimal places
+* Python output values are rounded to four decimal places
+
+![](wh_pic.png){height=50% width=50%}
+
+
+You can see how I compare the outpouts here.
+
+###Regression with a dummy variable in R
+
+![](R_pic.png){height=20% width=20%}
+
+
+<font size = "4"><span style = "color:black">**Multiple Linear regression with dummy variables**</font></span>
+
+<font size = "3"><span style = "color:blue">**Example 1:**</font></span>
+```{r,comment = NA, warning=FALSE}
+DietWeigthLoss <- read.delim("DietWeigthLoss.csv")
+head(DietWeigthLoss,5)
+```
+
+```{r, include=FALSE,comment = NA, warning=FALSE}
+typeof(DietWeigthLoss$Diet)
+typeof(DietWeigthLoss$WeightLoss)
+```
+
+```{r, include=FALSE,comment = NA, warning=FALSE}
+DietWeigthLoss$Diet_factor <- as.factor(DietWeigthLoss$Diet)
+```
+
+```{r,comment = NA, warning=FALSE}
+levels(DietWeigthLoss$Diet_factor)
+```
+
+Since there are four levels in the Diet category variable, three dummy variables are needed to represent the Diet category variable.
+
+According to this example, the baseline or reference level is Diet category A.
+
+An individual in:
+```{r echo=FALSE, results='asis', warning=FALSE}
+b <- c('A','B','C','D')
+c <- c('0',' 1','0','0')
+d <- c('0','0','1','0')
+e <- c('0','0','0','1')
+
+df <- data.frame(b,c,d,e)
+names(df) <- c('Diet','Dummy_A','Dummy_B','Dummy_C')
+kable(df)
+```
+
+
+<font size = "3"><span style = "color:red">**Model equation**</font></span>
+
+\begin{aligned}
+\hat{Y} = \beta_0+ \beta_1 X_B+ \beta_2 X_C + \beta_3 X_D\\
+\end{aligned}
+
+```{r,comment = NA, warning=FALSE}
+model1 <- lm(WeightLoss ~ Diet_factor,DietWeigthLoss)
+summary(model1)
+```
+
+<font size = "3"><span style = "color:red">**Hypothesis to be tested**</font></span>
+
+\begin{aligned}
+H_0:\text{The coefficient is not significant.}\\
+H_1:\text{The coefficient is significant.}
+\end{aligned}
+
+<font size = "3"><span style = "color:red">**Decision rule**</font></span>
+
+Reject $H_0$ if p-value$\leq 0.05$
+
+<font size = "3"><span style = "color:red">**Conclusion**</font></span>
+
+We have enough evidence to say that Diet_factorC is significant at 5% level of significance.
+
+<font size = "3"><span style = "color:red">**Interpretations**</font></span>
+
+$\beta_0$ = 9.18
+
+Mean WeightLoss for someone in the reference group, A is 9.18.
+
+$\beta_2$ = 2.933
+
+The increase in mean WeightLoss for category C relative to category A is 2.933.
+
+<font size = "4"><span style = "color:black">**Change Reference(Baseline) category**</font></span>
+
+If we want to change the reference level or beseline in R, we can use the following codes and fit the model.
+
+```{r,comment = NA, warning=FALSE}
+DietWeigthLoss$Diet_factor_new <- relevel(DietWeigthLoss$Diet_factor, ref = "C")
+```
+
+```{r,comment = NA, warning=FALSE}
+model2 <- lm(WeightLoss ~ Diet_factor_new,DietWeigthLoss)
+summary(model2)
+```
+
+<font size = "3"><span style = "color:blue">**Example 2:**</font></span>
+
+```{r,comment = NA, warning=FALSE}
+LungCapData <- read.csv("LungCapData2.csv")
+head(LungCapData,5)
+```
+
+
+```{r, include=FALSE,comment = NA, warning=FALSE}
+typeof(LungCapData$Gender)
+typeof(LungCapData$Smoke)
+```
+
+```{r, include=FALSE,comment = NA, warning=FALSE}
+LungCapData$Gender_factor <- as.factor(LungCapData$Gender)
+LungCapData$Smoke_factor <- as.factor(LungCapData$Smoke)
+```
+
+```{r,comment = NA, warning=FALSE}
+levels(LungCapData$Gender_factor)
+levels(LungCapData$Smoke_factor)
+```
+
+Since Gender has two categories, only one dummy is needed. According to this example, the baseline or reference level is Gender category female.
+
+```{r echo=FALSE, results='asis', warning=FALSE}
+b <- c('Female','Male')
+c <- c('0','0')
+d <- c('0','1')
+
+df <- data.frame(b,c,d)
+names(df) <- c('Gender','Dummy_Female','Dummy_Male')
+kable(df)
+```
+
+<font size = "3"><span style = "color:red">**Model equation**</font></span>
+
+\begin{aligned}
+\hat{Y} = \beta_0+ \beta_1 \text{Age}+ \beta_2 \text{Gender_factor_Male} \\
+\end{aligned}
+
+```{r,comment = NA, warning=FALSE}
+model3 <- lm(LungCap ~ Age + Gender_factor,LungCapData)
+summary(model3)
+```
+
+<font size = "4"><span style = "color:black">**Multiple Linear regression with an interaction**</font></span>
+
+<font size = "3"><span style = "color:red">**Model equation**</font></span>
+
+\begin{aligned}
+\hat{Y} = \beta_0+ \beta_1 \text{Age}+ \beta_2 \text{Gender_factor_Male} + \beta_3 \text{Age *Gender_factor_Male} \\
+\end{aligned}
+
+```{r,comment = NA, warning=FALSE}
+model4 <- lm(LungCap ~ Age + Gender_factor + Age*Gender_factor ,LungCapData)
+summary(model4)
+```
+
+<font size = "3"><span style = "color:red">**Hypothesis to be tested**</font></span>
+
+\begin{aligned}
+H_0:\text{The interaction effect is not significant.}\\
+H_1:\text{The interaction effect is significant.}
+\end{aligned}
+
+<font size = "3"><span style = "color:red">**Decision rule**</font></span>
+
+Reject $H_0$ if p-value$\leq 0.05$
+
+<font size = "3"><span style = "color:red">**Conclusion**</font></span>
+
+The interaction effect is significant at 5% level of significance.
+
+<font size = "3"><span style = "color:red">**Interpretations**</font></span>
+
+$\beta_0$ = 0.5484
+
+Mean LungCap for someone in the reference group, female is 0.5484.
+
+$\beta_1$ = 0.48819
+
+For female, the increase in mean LungCap is 0.48819 for unit increase in Age .
+
+$\beta_2$ = -2.32760
+
+The decrease in mean LungCap for category Male relative to category Female is 2.32760.
+
+$\beta_3$ = 0.33225
+
+The increase in mean LungCap for category Male relative to category Female is 0.33225 in unit increase in Age.
+
+###Regression with a dummy variable in SPSS
+
+![](SPSS_pic.png){height=20% width=20%}
+
+
+![](spss1.png){height=50% width=50%}
+
+
+By using *Linear Regression* in SPSS, we can fit the simple & multiple regression models.
+
+![](spss2.png){height=50% width=50%}
+
+<font size = "4"><span style = "color:black">**Multiple Linear regression with dummy variables**</font></span>
+
+<font size = "4"><span style = "color:blue">**Example 1:**</font></span>
+
+
+![](spss3.png){height=50% width=50%}
+
+
+<font size = "4"><span style = "color:blue">**Example 2:**</font></span>
+
+![](spss4.png){height=50% width=50%}
+
+<font size = "4"><span style = "color:black">**Multiple Linear regression with an interaction**</font></span>
+
+We have to create new variable to define interaction. In theis example, we create new variable by multiplying Age and Gender_factor_Male in each individuals.
+
+![](spss5.png){height=50% width=50%}
+
+
+###Regression with a dummy variable in Python
+![](python_pic.png){height=20% width=20%}
+
+
+<font size = "4"><span style = "color:black">**Multiple Linear regression with dummy variables**</font></span>
+
+<font size = "4"><span style = "color:blue">**Example 1:**</font></span>
+
+
+![](py1.png){height=50% width=50%}
+
+
+
+![](py2.png){height=50% width=50%}
+
+
+<font size = "4"><span style = "color:blue">**Example 2:**</font></span>
+
+![](py3.png){height=50% width=50%}
+
+![](py4.png){height=50% width=50%}
+
+<font size = "4"><span style = "color:black">**Multiple Linear regression with an interaction**</font></span>
+
+![](py5.png){height=50% width=50%}
+
+
+###Regression with a dummy variable in Minitab
+![](minitab_pic.png){height=20% width=20%}
+
+
+<font size = "4"><span style = "color:black">**Simple Linear regression with a dummy variable**</font></span>
+
+![](m1.png){height=50% width=50%}
+
+<font size = "4"><span style = "color:black">**Multiple Linear regression with dummy variables**</font></span>
+
+<font size = "4"><span style = "color:blue">**Example 1:**</font></span>
+
+![](m2.png){height=50% width=50%}
+
+<font size = "4"><span style = "color:blue">**Example 2:**</font></span>
+
+![](m3.png){height=50% width=50%}
+
+<font size = "4"><span style = "color:black">**Multiple Linear regression with an interaction**</font></span>
+
+![](m4.png){height=50% width=50%}
+
+
+<font size = "4"><span style = "color:blue">**Interaction plot**</font></span>
+
+On an *interaction plot*, parallel lines indicate that there is no **interaction effect** while different slopes suggest that one might be present. Below is the plot for Age*Gender_factor_Male.
+
+![](m5.png){height=50% width=50%}
+
+
+The crossed lines on the graph suggest that there is an interaction effect, which the significant p-value for the Age*Gender_factor_Male term confirms. 
+
+
+##Final note
+
+For more details, you can refer the **What is p-value?, ANOVA, and Multiple linear regression** blogs. 
+
+##References
+
+---
+nocite: | 
+  @rf1, @rf2, @rf3, @rf4, @rf5
+...
+
